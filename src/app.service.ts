@@ -32,8 +32,8 @@ export class AppService {
     }
 
     if(webScrabConfig.createImage) {
-      imageData = await this.imageMaker.makeTwitterImage(text);
-      this.SocialNetworkService.postImageTweet(imageData, text);
+      imageData = await this.imageMaker.makeImageWithBg(text);
+      return await this.SocialNetworkService.postImageTweet(imageData, text);
     } else {
       this.SocialNetworkService.postTextTweet(text);
     }

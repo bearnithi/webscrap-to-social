@@ -41,24 +41,16 @@ export class SocialNetworkService {
 
     async postImageTweet(imageData: string, textData: string) {
         const twitIns = new twit(this.twConfig);
-        // imageData.replace('data:image/jpeg;base64','');
-        twitIns.post('media/upload', { media_data: imageData }).then((res: any) => {
-            console.log(res);
-            const mediaIdStr = res.data.media_id_string;
 
-            const meta_params = { media_id: mediaIdStr, alt_text: { text: textData } }
-            twitIns.post('media/metadata/create', meta_params).then((mediaCreateRes) => {
-                const params = { status: textData, media_ids: [mediaIdStr] }
-                twitIns.post('statuses/update', params).then((res) => {
-                    this.tweetPosted.next(res);
-                })
-            });
-        })
+        const mediaRes: any = await twitIns.post('media/upload', { media_data: imageData });
+        const mediaIdStr = mediaRes.data.media_id_string;
 
-
+        const meta_params = { media_id: mediaIdStr, alt_text: { text: textData } }
+        const mediaCreateRes = await twitIns.post('media/metadata/create', meta_params)
         
-
-
+        const params = { status: textData, media_ids: [mediaIdStr] }
+        const result = await twitIns.post('statuses/update', params);
+        return result;
     }
 }
 

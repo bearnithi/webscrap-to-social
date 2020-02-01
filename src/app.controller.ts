@@ -9,10 +9,7 @@ export class AppController {
 
   @Get()
   async start() {
-     this.appService.scrapWeb();
-     this.socialService.tweetPosted.subscribe((res: any) => {
-       console.log(res);
-       return res;
-     });
+     const res = await this.appService.scrapWeb();
+     return 'Tweet Posted Successfully';
   }
 }
