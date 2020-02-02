@@ -21,26 +21,47 @@ export class AppService {
     this.$ = cheerio.load(result.data);
   }
 
-  async scrapWeb() {
+  scrapWeb(): string {
     let text = '';
-    let imageData = '';
 
     if(isString(webScrabConfig.query)) {
       text = this.$(webScrabConfig.query).first().text();
     } else if(isArray(webScrabConfig.query)) {
       text = this.scrapMultiText();
     }
+    text = this.truncateTweetByLimit(text);
 
-    if(webScrabConfig.createImage) {
-      imageData = await this.imageMaker.makeImageWithBg(text);
-      return await this.SocialNetworkService.postImageTweet(imageData, text);
-    } else {
-      this.SocialNetworkService.postTextTweet(text);
-    }
-
+    return text;
   }
 
-  scrapMultiText() {
+  async getImage(text: string): Promise<string> {
+    if(webScrabConfig.createImage) {
+      return await this.imageMaker.makeImageWithBg(text);
+    }
+
+    return 'Your config file do not have createImage flag as true';
+  }
+
+  appendTags(tweet: string): string {
+    if(isArray(webScrabConfig.tags)) {
+      tweet += `\n ${webScrabConfig.tags.join(' ')}`
+    }
+    return tweet;
+  }
+
+  truncateTweetByLimit(tweet: string): string {
+    if(tweet.length === webScrabConfig.limit) {
+      return tweet;
+    }
+
+    if(tweet.length > webScrabConfig.limit) {
+     tweet = tweet.substring(0, webScrabConfig.limit);
+    }
+
+    return tweet;
+  }
+
+  scrapMultiText(): string {
     const multiText = webScrabConfig.query.map((query: string) => {
       const ele = this.$(query);
       return `${ele.first().text()} \n`;

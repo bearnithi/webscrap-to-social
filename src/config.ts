@@ -3,5 +3,5 @@ export const webScrabConfig = {
     query: ['.qotd-h-short a.b-qt', '.qotd-h-short a.bq-aut'],
     createImage: true,
     limit: 280,
-    tags: ["#books", "#booklovers", "#bookstagram", "#bookaddict", "#quotes", "#quotestoliveby", "#quotesoftheday", "#motivation", "#motivationalquotes", "#fitness", "#life", "#fitnessmotivation"]
+    tags: ["#quotes", "#quotesoftheday", "#motivation", "#motivationalquotes", "#books", "#booklovers", "#bookstagram", "#quotestoliveby", "#fitness", "#life", "#lifequotes"]
 }
