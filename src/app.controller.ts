@@ -39,4 +39,21 @@ export class AppController {
       return 'Something went wrong while posting the tweet!'
     }
   }
+
+  @Get('post-text-fb')
+  async postTextFb() {
+    const text = this.appService.scrapWeb();
+    const res: any = await this.socialService.postFb(text);
+    console.log(res);
+    return 'posted';
+  }
+
+  @Get('post-imageonly-tweet')
+  async postImageOnlyTweet() {
+    const imageData = await this.appService.scrapImage();
+    const res = await this.socialService.postImageTweet(imageData, webScrabConfig.tags.join(' '));
+    console.log(res);
+    return 'Tweet posted'
+  }
+
 }

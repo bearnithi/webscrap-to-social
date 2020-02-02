@@ -34,6 +34,14 @@ export class AppService {
     return text;
   }
 
+  async scrapImage(): Promise<string> {
+    let imageBaseUrl = webScrabConfig.imageBaseUrl || '';
+    let imageUrl = imageBaseUrl + this.$(webScrabConfig.imageQuery).first().attr(webScrabConfig.imageAttr || 'src');
+    const imageData = await this.imageMaker.readImageAndMakeBase64(imageUrl)
+    return imageData;
+    
+  }
+
   async getImage(text: string): Promise<string> {
     if(webScrabConfig.createImage) {
       return await this.imageMaker.makeImageWithBg(text);

@@ -27,9 +27,12 @@ export class SocialNetworkService {
     tweetPosted: Subject<any> = new Subject<any>();
 
     async postFb(textData: string): Promise<any> {
-        Axios.post(`${this.fbAPI}/${this.fbConfig.pageID}/feed?message=${textData}&access_token=${this.fbConfig.pageAccessToken}`).then((res) => {
-            console.log(res);
-        })
+       const res = await Axios.post(`${this.fbAPI}/${this.fbConfig.pageID}/feed`, {
+        message: textData,
+        access_token: this.fbConfig.pageAccessToken
+       });
+
+       return res;
     }
 
     postTextTweet(textData: string) {

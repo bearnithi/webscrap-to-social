@@ -1,12 +1,22 @@
 import { Injectable } from "@nestjs/common";
 import * as jimp from 'jimp';
 import * as fs from 'fs';
+import Axios from "axios";
 
 @Injectable()
 export class ImageMakerService {
     imageWidth = 1200;
     imageHeight = 675;
     constructor() {}
+
+    async readImageAndMakeBase64(url: string) {
+        const image: any = await Axios.get(url, {
+            responseType: 'arraybuffer'
+        });
+
+        const finishedImage = Buffer.from(image.data, 'binary').toString('base64');
+        return finishedImage
+    }
 
     async makeImageWithBg(text: string) {
         const images = fs.readdirSync('assets/images/samples/');
