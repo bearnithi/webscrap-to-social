@@ -35,19 +35,14 @@ export class AppService {
   }
 
   async scrapImage(): Promise<string> {
-    let imageBaseUrl = webScrabConfig.imageBaseUrl || '';
-    let imageUrl = imageBaseUrl + this.$(webScrabConfig.imageQuery).first().attr(webScrabConfig.imageAttr || 'src');
+    const { imageOptions } = webScrabConfig;
+    let imageUrl = (imageOptions.imageBaseUrl || '') + this.$(webScrabConfig.imageQuery).first().attr(imageOptions.imageAttr || 'src');
     const imageData = await this.imageMaker.readImageAndMakeBase64(imageUrl)
     return imageData;
-    
   }
 
   async getImage(text: string): Promise<string> {
-    if(webScrabConfig.createImage) {
-      return await this.imageMaker.makeImageWithBg(text);
-    }
-
-    return 'Your config file do not have createImage flag as true';
+    return await this.imageMaker.makeImageWithBg(text);
   }
 
   appendTags(tweet: string): string {
@@ -76,6 +71,14 @@ export class AppService {
     }).toString();
 
     return multiText;
+  }
+
+  sendResponseFromTwitter(res) {
+    if(res.resp.statusCode === 200) {
+      return 'Tweet posted successfully!'
+    } else {
+      return 'Something went wrong while posting the tweet!'
+    }
   }
 
 

@@ -15,31 +15,9 @@ export class SocialNetworkService {
         access_token_secret: process.env.TWITTER_ACCESS_TOKEN_SECRET
     }
 
-    fbConfig = {
-        appID: process.env.FB_APP_ID,
-        appSecret: process.env.FB_APP_SECRET,
-        pageID: process.env.FB_PAGE_ID,
-        pageAccessToken: process.env.FB_PAGE_ACCESS_TOKEN
-    }
-
-    fbAPI: string = 'https://graph.facebook.com';
-
-    tweetPosted: Subject<any> = new Subject<any>();
-
-    async postFb(textData: string): Promise<any> {
-       const res = await Axios.post(`${this.fbAPI}/${this.fbConfig.pageID}/feed`, {
-        message: textData,
-        access_token: this.fbConfig.pageAccessToken
-       });
-
-       return res;
-    }
-
-    postTextTweet(textData: string) {
+    async postTextTweet(textData: string) {
         const twitIns = new twit(this.twConfig);
-        twitIns.post('statuses/update', {status: textData}).then((res) => {
-            this.tweetPosted.next(res);
-        });
+        return await twitIns.post('statuses/update', {status: textData})
     }
 
     async postImageTweet(imageData: string, textData: string) {

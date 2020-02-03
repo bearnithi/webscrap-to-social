@@ -2,6 +2,7 @@ import { Injectable } from "@nestjs/common";
 import * as jimp from 'jimp';
 import * as fs from 'fs';
 import Axios from "axios";
+import { webScrabConfig } from "../config";
 
 @Injectable()
 export class ImageMakerService {
@@ -9,13 +10,28 @@ export class ImageMakerService {
     imageHeight = 675;
     constructor() {}
 
-    async readImageAndMakeBase64(url: string) {
+    async readImageAndMakeBase64(url: string): Promise<any> {
         const image: any = await Axios.get(url, {
             responseType: 'arraybuffer'
         });
+        const imageBuffer = Buffer.from(image.data, 'binary');
+        const finishedImage = imageBuffer.toString('base64');
 
-        const finishedImage = Buffer.from(image.data, 'binary').toString('base64');
-        return finishedImage
+        if(webScrabConfig.imageOptions.crop) {
+            return await this.cropImage(imageBuffer);
+        }
+
+        return finishedImage;
+    }
+
+    async cropImage(imageBuffer: Buffer) {
+        const { cropOptions } = webScrabConfig.imageOptions;
+        const img = await jimp.read(imageBuffer);
+        const croppedImage = await img.crop(cropOptions.x, cropOptions.y, cropOptions.width, cropOptions.height);
+        const fileName = 'temp' + '.jpg'
+        const imgFileWrite = await croppedImage.writeAsync(`assets/images/${fileName}`); 
+        const croppedImageBase64 = await fs.readFileSync(`assets/images/${fileName}`, { encoding: 'base64'});
+        return croppedImageBase64;
     }
 
     async makeImageWithBg(text: string) {

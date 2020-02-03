@@ -10,20 +10,15 @@ export class AppController {
 
   @Get()
   async start() {
-     const res = await this.appService.scrapWeb();
-     return 'Tweet Posted Successfully';
+      return await this.postTextTweet();
   }
 
   @Get('post-text-tweet')
   async postTextTweet() {
     const text =  this.appService.scrapWeb();
-    const res: any = await this.socialService.postTextTweet(text);
-
-    if(res.data.status === 200) {
-      return 'Tweet has been posted successfully!'
-    } else {
-      return 'Something went wrong while posting the tweet!'
-    }
+    const textWithTags = this.appService.appendTags(text)
+    const res: any = await this.socialService.postTextTweet(textWithTags);
+    return this.appService.sendResponseFromTwitter(res);
   }
 
   @Get('post-image-tweet')
@@ -32,28 +27,14 @@ export class AppController {
     const imageData = await this.appService.getImage(text);
     text = this.appService.appendTags(text);
     const res: any = await this.socialService.postImageTweet(imageData, text);
-
-    if(res.resp.statusCode === 200) {
-      return 'Tweet with Image posted successfully!'
-    } else {
-      return 'Something went wrong while posting the tweet!'
-    }
-  }
-
-  @Get('post-text-fb')
-  async postTextFb() {
-    const text = this.appService.scrapWeb();
-    const res: any = await this.socialService.postFb(text);
-    console.log(res);
-    return 'posted';
+    return this.appService.sendResponseFromTwitter(res);
   }
 
   @Get('post-imageonly-tweet')
   async postImageOnlyTweet() {
     const imageData = await this.appService.scrapImage();
     const res = await this.socialService.postImageTweet(imageData, webScrabConfig.tags.join(' '));
-    console.log(res);
-    return 'Tweet posted'
+    return this.appService.sendResponseFromTwitter(res);
   }
 
 }

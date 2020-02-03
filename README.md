@@ -1,38 +1,87 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo_text.svg" width="320" alt="Nest Logo" /></a>
-</p>
-
-[travis-image]: https://api.travis-ci.org/nestjs/nest.svg?branch=master
-[travis-url]: https://travis-ci.org/nestjs/nest
-[linux-image]: https://img.shields.io/travis/nestjs/nest/master.svg?label=linux
-[linux-url]: https://travis-ci.org/nestjs/nest
-  
-  <p align="center">A progressive <a href="http://nodejs.org" target="blank">Node.js</a> framework for building efficient and scalable server-side applications, heavily inspired by <a href="https://angular.io" target="blank">Angular</a>.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore"><img src="https://img.shields.io/npm/dm/@nestjs/core.svg" alt="NPM Downloads" /></a>
-<a href="https://travis-ci.org/nestjs/nest"><img src="https://api.travis-ci.org/nestjs/nest.svg?branch=master" alt="Travis" /></a>
-<a href="https://travis-ci.org/nestjs/nest"><img src="https://img.shields.io/travis/nestjs/nest/master.svg?label=linux" alt="Linux" /></a>
-<a href="https://coveralls.io/github/nestjs/nest?branch=master"><img src="https://coveralls.io/repos/github/nestjs/nest/badge.svg?branch=master#5" alt="Coverage" /></a>
-<a href="https://gitter.im/nestjs/nestjs?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=body_badge"><img src="https://badges.gitter.im/nestjs/nestjs.svg" alt="Gitter" /></a>
-<a href="https://opencollective.com/nest#backer"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec"><img src="https://img.shields.io/badge/Donate-PayPal-dc3d53.svg"/></a>
-  <a href="https://twitter.com/nestframework"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
-
 ## Description
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+<p>
+ A simple NestJS tool to scrap text and image from any website and post that content in your twitter account.
+</p>
+
 
 ## Installation
 
 ```bash
 $ npm install
 ```
+
+## Configuration
+
+### Configure Twitter Account
+
+  Create a `.env` file in your root directory, and add the following variables (without <> sympols and quotes). You can get these keys by creating a developer account in twitter.
+
+```bash
+TWITTER_CONSUMER_KEY=<YOUR_TWITTER_CONSUMER_KEY>
+TWITTER_CONSUMER_SECRET=<YOUR_TWITTER_CONSUMER_SECRET>
+TWITTER_ACCESS_TOKEN=<YOUR_TWITTER_ACCESS_TOKEN>
+TWITTER_ACCESS_TOKEN_SECRET=<YOUR_TWITTER_ACCESS_TOKEN_SECRET>
+```
+
+### Web Scrap Configuration
+In the `src/config.ts`, change the `webScrapInfo` object with your targeting website.
+
+|   Properties | Values   | Type | Description |
+| ------------ | ------------ | -------- | --------- |
+| url  | 'http://samplewebsite.com' | string | Website url to scrap the data
+|  query | ['.container p', 'main .headline']  | Array | List of query to search the DOM.
+| imageQuery | '.container img' | string | Query to scrap the image.
+| imageOptions | {imageBaseUrl etc.. } | object | several image options like cropping etc. More info in the below table
+| limit | 280 | number | Text limit of the post. especially for twitter.
+| tags | ['#motivation','#success'] | Array | Tags to append in the post
+
+#### Image Options
+
+In the `imageOptions` object, there are several properties to modify.
+
+|   Properties | Values   | Type | Description |
+| ------------ | ------------ | -------- | --------- |
+| imageBaseUrl | 'http://samplewebsite.com/photos' | string | Base url for the image scraping.
+| imageAttr | 'src' | string | Attribute of the image element. by default it's src, if you want to select anyother attribute you can change this property.
+| crop | true | boolean | To enable crop functionality.
+| cropOptions | { x: 0, y: 0, width: 1200, height: 580 } | object | Crop Options. 
+
+#### Sample Web Config
+
+```typescript
+export const webScrabConfig = {
+    url: 'https://www.sample.com/some-page',
+    query: ['.qotd-h-short a.b-qt', '.qotd-h-short a.bq-aut'],
+    imageQuery: '.Qt .p-qotd',
+    imageOptions: {
+        imageBaseUrl: 'https://www.sample.com',
+        imageAttr: 'src',
+        crop: true,
+        cropOptions: {
+            x: 0,
+            y: 0,
+            width: 1200,
+            height: 560
+        }
+    },
+    limit: 280,
+    tags: ["#quotes", "#quotesoftheday", "#motivation", "#motivationalquotes", "#books", "#booklovers", "#bookstagram", "#quotestoliveby", "#fitness", "#life", "#lifequotes"]
+}
+
+````
+
+## API ENDPOINTS TO SCRAP AND TWEET
+
+### 1. /post-text-tweet
+This end point will scrap the text using the config you provided (website url and query array) and post the text content in your twitter account.
+
+### 2. /post-imageonly-tweet
+It's used to scrap the image from the website (imageBaseUrl and imageQuery) and post it in your twitter account.
+
+### 3. /post-image-tweet
+It'll post both the text and image which is created on the fly with sample backgrounds and scraped text. (This Endpoint won't scrap the image from website, instead it create a image with a sample background in `assets/images/samples` folder and scraped text on it).
+
 
 ## Running the app
 
@@ -47,29 +96,3 @@ $ npm run start:dev
 $ npm run start:prod
 ```
 
-## Test
-
-```bash
-# unit tests
-$ npm run test
-
-# e2e tests
-$ npm run test:e2e
-
-# test coverage
-$ npm run test:cov
-```
-
-## Support
-
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
-
-## Stay in touch
-
-- Author - [Kamil Myśliwiec](https://kamilmysliwiec.com)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
-
-## License
-
-  Nest is [MIT licensed](LICENSE).
