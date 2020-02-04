@@ -5,7 +5,7 @@ export const webScrabConfig = {
         imageQuery: '.bqQt .p-qotd',
         selectionType: 'last',
         imageOptions: {
-            imageBaseUrl: '',
+            imageBaseUrl: 'https://www.brainyquote.com',
             imageAttr: 'data-img-url',
             selectionType: 'last',
             crop: true,
