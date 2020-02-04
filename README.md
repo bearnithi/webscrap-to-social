@@ -25,7 +25,7 @@ TWITTER_ACCESS_TOKEN_SECRET=<YOUR_TWITTER_ACCESS_TOKEN_SECRET>
 ```
 
 ### Web Scrap Configuration
-In the `src/config.ts`, change the `webScrapInfo` object with your targeting website.
+In the `src/config.ts`, change the `webScrapInfo` object with your targeting websites.
 
 |   Properties | Values   | Type | Description |
 | ------------ | ------------ | -------- | --------- |
@@ -51,37 +51,63 @@ In the `imageOptions` object, there are several properties to modify.
 
 ```typescript
 export const webScrabConfig = {
-    url: 'https://www.sample.com/some-page',
-    query: ['.qotd-h-short a.b-qt', '.qotd-h-short a.bq-aut'],
-    imageQuery: '.Qt .p-qotd',
-    imageOptions: {
-        imageBaseUrl: 'https://www.sample.com',
-        imageAttr: 'src',
-        crop: true,
-        cropOptions: {
-            x: 0,
-            y: 0,
-            width: 1200,
-            height: 560
-        }
+    'webname1': {
+        url: 'https://www.sample.com/some-page',
+        query: ['.qotd-h-short a.b-qt', '.qotd-h-short a.bq-aut'],
+        imageQuery: '.Qt .p-qotd',
+        imageOptions: {
+            imageBaseUrl: 'https://www.sample.com',
+            imageAttr: 'src',
+            crop: true,
+            cropOptions: {
+                x: 0,
+                y: 0,
+                width: 1200,
+                height: 560
+            }
+        },
+        limit: 280,
+        tags: ["#quotes", "#quotesoftheday", "#motivation", "#motivationalquotes", "#books", "#booklovers", "#bookstagram", "#quotestoliveby", "#fitness", "#life", "#lifequotes"]
     },
-    limit: 280,
-    tags: ["#quotes", "#quotesoftheday", "#motivation", "#motivationalquotes", "#books", "#booklovers", "#bookstagram", "#quotestoliveby", "#fitness", "#life", "#lifequotes"]
+    webname2: {
+        url: 'https://www.sample.com/some-page',
+        query: ['.qotd-h-short a.b-qt', '.qotd-h-short a.bq-aut'],
+        imageQuery: '.Qt .p-qotd',
+        imageOptions: {
+            imageBaseUrl: 'https://www.sample.com',
+            imageAttr: 'src',
+            crop: true,
+            cropOptions: {
+                x: 0,
+                y: 0,
+                width: 1200,
+                height: 560
+            }
+        },
+        limit: 280,
+        tags: ["#quotes", "#quotesoftheday", "#motivation", "#motivationalquotes", "#books", "#booklovers", "#bookstagram", "#quotestoliveby", "#fitness", "#life", "#lifequotes"]
+    } 
+
 }
 
 ````
 
 ## API ENDPOINTS TO SCRAP AND TWEET
 
-### 1. /post-text-tweet
+### 1. /post-text-tweet?webConfig=webname
 This end point will scrap the text using the config you provided (website url and query array) and post the text content in your twitter account.
 
-### 2. /post-imageonly-tweet
+### 2. /post-imageonly-tweet?webConfig=webname
 It's used to scrap the image from the website (imageBaseUrl and imageQuery) and post it in your twitter account.
 
-### 3. /post-image-tweet
+### 3. /post-image-tweet?webConfig=webname
 It'll post both the text and image which is created on the fly with sample backgrounds and scraped text. (This Endpoint won't scrap the image from website, instead it create a image with a sample background in `assets/images/samples` folder and scraped text on it).
 
+All the above end points have a `webConfig` query param to select a particular web-scrapping configuration based on the property name.
+
+
+## NOTE
+This tool is still under development, currently it supports Twitter. Soon, it'll support FB Page API.
 
 ## Running the app
 

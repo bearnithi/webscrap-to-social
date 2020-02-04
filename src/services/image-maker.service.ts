@@ -10,22 +10,21 @@ export class ImageMakerService {
     imageHeight = 675;
     constructor() {}
 
-    async readImageAndMakeBase64(url: string): Promise<any> {
+    async readImageAndMakeBase64(url: string, isCrop: boolean, cropOptions: any = {}): Promise<any> {
         const image: any = await Axios.get(url, {
             responseType: 'arraybuffer'
         });
         const imageBuffer = Buffer.from(image.data, 'binary');
         const finishedImage = imageBuffer.toString('base64');
 
-        if(webScrabConfig.imageOptions.crop) {
-            return await this.cropImage(imageBuffer);
+        if(isCrop) {
+            return await this.cropImage(imageBuffer, cropOptions);
         }
 
         return finishedImage;
     }
 
-    async cropImage(imageBuffer: Buffer) {
-        const { cropOptions } = webScrabConfig.imageOptions;
+    async cropImage(imageBuffer: Buffer, cropOptions) {
         const img = await jimp.read(imageBuffer);
         const croppedImage = await img.crop(cropOptions.x, cropOptions.y, cropOptions.width, cropOptions.height);
         const fileName = 'temp' + '.jpg'

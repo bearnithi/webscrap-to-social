@@ -1,7 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import axios from 'axios';
 import * as cheerio from 'cheerio';
-import { webScrabConfig } from './config';
 import { SocialNetworkService } from './services/social-network.service';
 import { text } from 'body-parser';
 import { isString, isArray } from 'util';
@@ -11,22 +10,26 @@ import { ImageMakerService } from './services/image-maker.service';
 export class AppService {
   $: CheerioStatic;
   imageData: any;
+  webConfig: any = {};
+
   constructor(private readonly SocialNetworkService: SocialNetworkService, 
     private readonly imageMaker: ImageMakerService) {
-    this.initWebScrap();
   }
 
   async initWebScrap() {
-    const result = await axios.get(webScrabConfig.url);
-    this.$ = cheerio.load(result.data);
+    const result = await axios.get(this.webConfig.url);
+    this.$ = await cheerio.load(result.data);
   }
 
-  scrapWeb(): string {
+  async scrapWeb(): Promise<string> {
+    if(!this.$) {
+      await this.initWebScrap();
+    }
     let text = '';
 
-    if(isString(webScrabConfig.query)) {
-      text = this.$(webScrabConfig.query).first().text();
-    } else if(isArray(webScrabConfig.query)) {
+    if(isString(this.webConfig.query)) {
+      text = this.$(this.webConfig.query).first().text();
+    } else if(isArray(this.webConfig.query)) {
       text = this.scrapMultiText();
     }
     text = this.truncateTweetByLimit(text);
@@ -35,9 +38,10 @@ export class AppService {
   }
 
   async scrapImage(): Promise<string> {
-    const { imageOptions } = webScrabConfig;
-    let imageUrl = (imageOptions.imageBaseUrl || '') + this.$(webScrabConfig.imageQuery).first().attr(imageOptions.imageAttr || 'src');
-    const imageData = await this.imageMaker.readImageAndMakeBase64(imageUrl)
+    const { imageOptions } = this.webConfig;
+    let imageUrl = (imageOptions.imageBaseUrl || '') + this.$(this.webConfig.imageQuery).first().attr(imageOptions.imageAttr || 'src');
+    console.log(imageUrl);
+    const imageData = await this.imageMaker.readImageAndMakeBase64(imageUrl, imageOptions.crop, imageOptions.cropOptions)
     return imageData;
   }
 
@@ -46,26 +50,26 @@ export class AppService {
   }
 
   appendTags(tweet: string): string {
-    if(isArray(webScrabConfig.tags)) {
-      tweet += `\n ${webScrabConfig.tags.join(' ')}`
+    if(isArray(this.webConfig.tags)) {
+      tweet += `\n ${this.webConfig.tags.join(' ')}`
     }
     return tweet;
   }
 
   truncateTweetByLimit(tweet: string): string {
-    if(tweet.length === webScrabConfig.limit) {
+    if(tweet.length === this.webConfig.limit) {
       return tweet;
     }
 
-    if(tweet.length > webScrabConfig.limit) {
-     tweet = tweet.substring(0, webScrabConfig.limit);
+    if(tweet.length > this.webConfig.limit) {
+     tweet = tweet.substring(0, this.webConfig.limit);
     }
 
     return tweet;
   }
 
   scrapMultiText(): string {
-    const multiText = webScrabConfig.query.map((query: string) => {
+    const multiText = this.webConfig.query.map((query: string) => {
       const ele = this.$(query);
       return `${ele.first().text()} \n`;
     }).toString();

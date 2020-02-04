@@ -17,7 +17,13 @@ export class SocialNetworkService {
 
     async postTextTweet(textData: string) {
         const twitIns = new twit(this.twConfig);
-        return await twitIns.post('statuses/update', {status: textData})
+        try {
+            const res =  await twitIns.post('statuses/update', {status: textData});
+            console.log(res);
+            return res;
+        } catch(e) {
+            console.log(e);
+        }
     }
 
     async postImageTweet(imageData: string, textData: string) {
